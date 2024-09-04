@@ -2,5 +2,9 @@
 name = "timing"
 version = "0.1.0"
 edition = "2021"
+description = "Easily time a block of code"
+license = "MIT"
+repository = "https://github.com/freergit/timing.git"
+readme = "README.md"
 
 [dependencies]
