@@ -1,7 +1,5 @@
-use std::{
-    arch::x86_64::_rdtsc,
-    time::{Duration, Instant},
-};
+use std::arch::asm;
+use std::time::{Duration, Instant};
 
 pub fn timing<F: FnOnce()>(f: F) -> Duration {
     let start = Instant::now();
@@ -15,17 +13,52 @@ pub fn timing_return<T, F: FnOnce() -> T>(f: F) -> (T, Duration) {
     (t, start.elapsed())
 }
 
+#[cfg(target_arch = "x86_64")]
+#[inline]
+pub fn rdtsc_start() -> u64 {
+    let rax: u64;
+    unsafe {
+        asm!(
+            "mfence",
+            "lfence",
+            "rdtsc",
+            "shl rdx, 32",
+            "or rax, rdx",
+            out("rax") rax
+        );
+    }
+    rax
+}
+
+#[cfg(target_arch = "x86_64")]
+#[inline]
+pub fn rdtsc_stop() -> u64 {
+    let rax: u64;
+    unsafe {
+        asm!(
+            "rdtsc",
+            "lfence",
+            "shl rdx, 32",
+            "or rax, rdx",
+            out("rax") rax
+        );
+    }
+    rax
+}
+
+#[cfg(target_arch = "x86_64")]
 pub fn timing_rdtsc<F: FnOnce()>(f: F) -> u64 {
-    let start = unsafe { _rdtsc() };
+    let start = rdtsc_start();
     f();
-    let end = unsafe { _rdtsc() };
+    let end = rdtsc_stop();
     end - start
 }
 
+#[cfg(target_arch = "x86_64")]
 pub fn timing_rdtsc_return<T, F: FnOnce() -> T>(f: F) -> (T, u64) {
-    let start = unsafe { _rdtsc() };
+    let start = rdtsc_start();
     let t = f();
-    let end = unsafe { _rdtsc() };
+    let end = rdtsc_stop();
     (t, end - start)
 }
 
@@ -61,5 +94,16 @@ mod tests {
 
         assert!(counter != 0);
         println!("{counter}");
+    }
+
+    #[test]
+    fn rdtsc_timing_return() {
+        let (val, counter) = timing_rdtsc_return(|| {
+            println!("...");
+            42
+        });
+
+        assert!(counter != 0);
+        assert!(val == 42);
     }
 }
