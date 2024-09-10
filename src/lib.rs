@@ -15,7 +15,7 @@ pub fn timing_return<T, F: FnOnce() -> T>(f: F) -> (T, Duration) {
 
 #[cfg(target_arch = "x86_64")]
 #[inline]
-pub fn rdtsc_start() -> u64 {
+fn rdtsc_start() -> u64 {
     let rax: u64;
     unsafe {
         asm!(
@@ -32,7 +32,7 @@ pub fn rdtsc_start() -> u64 {
 
 #[cfg(target_arch = "x86_64")]
 #[inline]
-pub fn rdtsc_stop() -> u64 {
+fn rdtsc_stop() -> u64 {
     let rax: u64;
     unsafe {
         asm!(
