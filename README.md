@@ -2,6 +2,7 @@
 
 [![build & test](https://github.com/freergit/timing/actions/workflows/ci.yml/badge.svg)](https://github.com/freergit/timing/actions/workflows/ci.yml)
 [![license](https://img.shields.io/github/license/freergit/timing)](https://github.com/freergit/timing/blob/main/LICENSE.txt)
+[![Crates.io](https://img.shields.io/crates/v/timing_rdtsc?style=flat-square)](https://crates.io/crates/timing_rdtsc/versions)
 
 
 Easily measure executable time of a code block in human readable form. A rdtsc variant is also available for x86_64 architectures.
